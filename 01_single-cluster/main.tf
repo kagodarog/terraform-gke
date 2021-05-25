@@ -26,6 +26,7 @@ module "gcp-network" {
       subnet_name   = "${var.subnetwork}-${var.env_name}"
       subnet_ip     = "10.10.0.0/16"
       subnet_region = var.region
+      subnet_private_access = "true"
     },
   ]
 
@@ -47,7 +48,8 @@ module "gke" {
   source                 = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
   project_id             = var.project_id
   name                   = "${var.cluster_name}-${var.env_name}"
-  regional               = true
+  regional               = false
+  zones                   = var.zones
   region                 = var.region
   network                = module.gcp-network.network_name
   subnetwork             = module.gcp-network.subnets_names[0]
@@ -57,11 +59,22 @@ module "gke" {
     {
       name                      = "node-pool"
       machine_type              = "e2-medium"
-      node_locations            = "europe-west1-b,europe-west1-c,europe-west1-d"
+      node_locations            = "asia-south1-a,asia-south1-b"
       min_count                 = 1
-      max_count                 = 2
-      disk_size_gb              = 30
-    },
+      max_count                 = 1
+      disk_size_gb              = 50
+      auto_upgrade    = true
+    }
   ]
-}
 
+  node_pools_oauth_scopes = {
+    node-pool = [
+      "https://www.googleapis.com/auth/trace.append",
+      "https://www.googleapis.com/auth/service.management.readonly",
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/devstorage.read_write",
+      "https://www.googleapis.com/auth/servicecontrol",
+      "https://www.googleapis.com/auth/pubsub",
+    ]
+  }
+}

@@ -4,7 +4,7 @@ variable "project_id" {
 
 variable "cluster_name" {
   description = "The name for the GKE cluster"
-  default     = "learnk8s-cluster"
+  default     = "ayursh-cluster"
 }
 
 variable "env_name" {
@@ -14,7 +14,7 @@ variable "env_name" {
 
 variable "region" {
   description = "The region to host the cluster in"
-  default     = "europe-west1"
+  default     = "asia-south1"
 }
 
 variable "network" {
@@ -35,4 +35,10 @@ variable "ip_range_pods_name" {
 variable "ip_range_services_name" {
   description = "The secondary ip range to use for services"
   default     = "ip-range-services"
+}
+
+variable "zones" {
+  type        = list(string)
+  description = "The zone to host the cluster in (required if is a zonal cluster)"
+  default = ["asia-south1-a"]
 }
